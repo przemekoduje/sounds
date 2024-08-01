@@ -11,6 +11,8 @@ const Instrument = ({ instrument }) => {
     }),
   }));
 
+  console.log(isDragging)
+
   return (
     <img
       ref={drag}

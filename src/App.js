@@ -1,14 +1,15 @@
 import './App.css';
 import React, { useState } from 'react';
 import SequencePlayer from './components/SequencePlayer';
-// import DragDropArea from './DragDropArea';
 import drumSound from './sounds/drum.wav';
 import guitarSound from './sounds/guitar.wav';
 import pianoSound from './sounds/piano.wav';
-import DragDropArea from './components/DragDropArea';
+import InstrumentBoard from './components/InstrumentBoard';
 
 const App = () => {
   const [sequence, setSequence] = useState([]);
+  const [showBoard, setShowBoard] = useState(false);
+
   const instruments = [
     { id: 1, name: 'Drum', image: '/instruments/drum.png', sound: drumSound },
     { id: 2, name: 'Guitar', image: '/instruments/guitar.png', sound: guitarSound },
@@ -23,13 +24,22 @@ const App = () => {
     }
     console.log(newSequence)
     setSequence(newSequence);
+    setShowBoard(false);
+  };
+  const handleSequenceEnd = () => {
+    setShowBoard(true); // Show board when sequence ends
   };
   
   return (
     <div className="app">
-      <button onClick={generateSequence}>Start</button>
-      <SequencePlayer sequence={sequence} />
-      <DragDropArea instruments={instruments} sequence={sequence} />
+      {!showBoard ? (
+        <>
+          <button onClick={generateSequence}>Start</button>
+          <SequencePlayer sequence={sequence} onEnd={handleSequenceEnd} />
+        </>
+      ) : (
+        <InstrumentBoard instruments={instruments} sequence={sequence} />
+      )}
     </div>
   );
 };
