@@ -4,11 +4,14 @@ import { useDrop } from 'react-dnd';
 const DropArea = ({ onDrop }) => {
   const [{ isOver }, drop] = useDrop(() => ({
     accept: 'instrument',
-    drop: (item) => onDrop(item),
+    drop: (item) => {
+      console.log('Item dropped:', item); // Sprawdzanie, czy przedmiot jest poprawnie przekazywany
+      onDrop(item);
+    },
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
     }),
-  }));
+  }), [onDrop]);
 
   return (
     <div

@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { DndProvider, useDrag } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import DropArea from './dropArea';
+import DropArea from './DropArea';
 
 const Instrument = ({ instrument }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'instrument',
-    item: { id: instrument.id },
+    item: { id: instrument.uniqueId },
     collect: (monitor) => ({
-      isDragging: !!monitor.isDragging(),
+      isDragging: monitor.isDragging(),
     }),
   }), [instrument]);
 
@@ -28,36 +28,42 @@ const Instrument = ({ instrument }) => {
         width: 'auto',
         height: 'auto',
       }}
-    //   draggable={false} // Zapobiega domyślnemu działaniu
-    //   onDragStart={(e) => e.preventDefault()} // Zapobiega domyślnemu działaniu
     />
   );
 };
 
-const InstrumentBoard = ({ instruments, sequence }) => {
+const InstrumentBoard = ({ sequence }) => {
   const [items, setItems] = useState([]);
   const [userSequence, setUserSequence] = useState([]);
 
   useEffect(() => {
     console.log("Received sequence in InstrumentBoard: ", sequence);
-    const randomPositions = instruments.map(inst => ({
-      ...inst,
-      position: {
-        x: Math.floor(Math.random() * (window.innerWidth - 100)),
-        y: Math.floor(Math.random() * (window.innerHeight - 100)),
-      },
-      
-    }));
-    console.log("Instruments positiopn: ", randomPositions);
+    
+    const instrumentCount = {};
+    const randomPositions = sequence.map(inst => {
+      const count = instrumentCount[inst.id] || 0;
+      instrumentCount[inst.id] = count + 1;
+
+      return {
+        ...inst,
+        uniqueId: `${inst.id}-${count}`, // Ensure unique ID for each instrument instance
+        position: {
+          x: Math.floor(Math.random() * (window.innerWidth - 100)),
+          y: Math.floor(Math.random() * (window.innerHeight - 100)),
+        },
+      };
+    });
+    console.log("Instruments position: ", randomPositions);
     setItems(randomPositions);
-  }, [instruments]);
+  }, [sequence]);
 
   const handleDrop = (item) => {
-    const instrument = items.find((inst) => inst.id === item.id);
+    console.log('Dropped item in InstrumentBoard:', items);
+    const instrument = items.find((inst) => inst.uniqueId === item.id);
+    console.log('Found instrument in items:', instrument);
 
     setUserSequence((prevSequence) => [...prevSequence, instrument]);
-
-    setItems((prevItems) => prevItems.filter((inst) => inst.id !== item.id));
+    setItems((prevItems) => prevItems.filter((inst) => inst.uniqueId !== item.id));
 
     if (userSequence.length + 1 === sequence.length) {
       const isCorrect = userSequence.every((inst, index) => inst.id === sequence[index].id);
@@ -76,7 +82,7 @@ const InstrumentBoard = ({ instruments, sequence }) => {
       <div className="instrument-board" style={{ position: 'relative', width: '100vw', height: '100vh' }}>
         <DropArea onDrop={handleDrop} />
         {items.map((instrument) => (
-          <Instrument key={instrument.id} instrument={instrument} />
+          <Instrument key={instrument.uniqueId} instrument={instrument} />
         ))}
       </div>
     </DndProvider>

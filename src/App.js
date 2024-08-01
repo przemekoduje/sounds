@@ -22,14 +22,15 @@ const App = () => {
       const randomInstrument = instruments[Math.floor(Math.random() * instruments.length)];
       newSequence.push(randomInstrument);
     }
-    console.log(newSequence)
+    console.log(newSequence);
     setSequence(newSequence);
     setShowBoard(false);
   };
+
   const handleSequenceEnd = () => {
     setShowBoard(true); // Show board when sequence ends
   };
-  
+
   return (
     <div className="app">
       {!showBoard ? (
@@ -38,7 +39,7 @@ const App = () => {
           <SequencePlayer sequence={sequence} onEnd={handleSequenceEnd} />
         </>
       ) : (
-        <InstrumentBoard instruments={instruments} sequence={sequence} />
+        <InstrumentBoard sequence={sequence} />
       )}
     </div>
   );
