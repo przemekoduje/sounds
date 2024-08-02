@@ -5,6 +5,8 @@ import drumSound from './sounds/drum.wav';
 import guitarSound from './sounds/guitar.wav';
 import pianoSound from './sounds/piano.wav';
 import InstrumentBoard from './components/InstrumentBoard';
+// import { DndProvider } from 'react-dnd';
+// import { HTML5Backend } from 'react-dnd-html5-backend';
 
 const App = () => {
   const [sequence, setSequence] = useState([]);
@@ -18,7 +20,7 @@ const App = () => {
 
   const generateSequence = () => {
     const newSequence = [];
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 8; i++) {
       const randomInstrument = instruments[Math.floor(Math.random() * instruments.length)];
       newSequence.push(randomInstrument);
     }
@@ -32,6 +34,7 @@ const App = () => {
   };
 
   return (
+    // <DndProvider backend={HTML5Backend}>
     <div className="app">
       {!showBoard ? (
         <>
@@ -42,6 +45,7 @@ const App = () => {
         <InstrumentBoard sequence={sequence} />
       )}
     </div>
+    // </DndProvider>
   );
 };
 

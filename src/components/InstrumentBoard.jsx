@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { DndProvider, useDrag } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import DropArea from './DropArea';
+import DropArea from './dropArea';
 
 const Instrument = ({ instrument }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
@@ -27,6 +27,7 @@ const Instrument = ({ instrument }) => {
         maxHeight: '50px',
         width: 'auto',
         height: 'auto',
+        zIndex: isDragging ? 2 : 1,
       }}
     />
   );
@@ -35,6 +36,8 @@ const Instrument = ({ instrument }) => {
 const InstrumentBoard = ({ sequence }) => {
   const [items, setItems] = useState([]);
   const [userSequence, setUserSequence] = useState([]);
+  const [droppedInstruments, setDroppedInstruments] = useState([]);
+  const dropAreaRef = useRef(null); // Ref to get DropArea position
 
   useEffect(() => {
     console.log("Received sequence in InstrumentBoard: ", sequence);
@@ -57,12 +60,27 @@ const InstrumentBoard = ({ sequence }) => {
     setItems(randomPositions);
   }, [sequence]);
 
-  const handleDrop = (item) => {
+  const handleDrop = (item, monitor) => {
+    const dropArea = dropAreaRef.current;
+    if (!dropArea) return;
+
+    const dropAreaRect = dropArea.getBoundingClientRect();
+    const dropPosition = monitor.getClientOffset();
+    
     console.log('Dropped item in InstrumentBoard:', items);
     const instrument = items.find((inst) => inst.uniqueId === item.id);
     console.log('Found instrument in items:', instrument);
 
+    const updatedInstrument = {
+      ...instrument,
+      position: {
+        x: dropPosition.x - dropAreaRect.left - 25, // Adjusting for icon size and DropArea offset
+        y: dropPosition.y - dropAreaRect.top - 25,
+      }
+    };
+
     setUserSequence((prevSequence) => [...prevSequence, instrument]);
+    setDroppedInstruments((prevDropped) => [...prevDropped, updatedInstrument]);
     setItems((prevItems) => prevItems.filter((inst) => inst.uniqueId !== item.id));
 
     if (userSequence.length + 1 === sequence.length) {
@@ -72,6 +90,7 @@ const InstrumentBoard = ({ sequence }) => {
       } else {
         console.log('Spróbuj ponownie!');
         setUserSequence([]);
+        setDroppedInstruments([]);
         setItems((prevItems) => [...prevItems, ...userSequence, instrument]);
       }
     }
@@ -80,7 +99,7 @@ const InstrumentBoard = ({ sequence }) => {
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="instrument-board" style={{ position: 'relative', width: '100vw', height: '100vh' }}>
-        <DropArea onDrop={handleDrop} />
+        <DropArea ref={dropAreaRef} onDrop={handleDrop} droppedInstruments={droppedInstruments} />
         {items.map((instrument) => (
           <Instrument key={instrument.uniqueId} instrument={instrument} />
         ))}
