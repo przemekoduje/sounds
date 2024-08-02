@@ -20,7 +20,7 @@ const App = () => {
 
   const generateSequence = () => {
     const newSequence = [];
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 4; i++) {
       const randomInstrument = instruments[Math.floor(Math.random() * instruments.length)];
       newSequence.push(randomInstrument);
     }

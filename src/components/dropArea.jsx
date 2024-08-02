@@ -27,8 +27,8 @@ const DropArea = forwardRef(({ onDrop, droppedInstruments }, ref) => {
         transform: 'translate(-50%, -50%)',
         width: '200px',
         height: '200px',
-        border: '2px dashed #000',
-        backgroundColor: isOver ? '#d0f0c0' : '#f0f0f0',
+        border: '1px dashed #000',
+        backgroundColor: isOver ? '#eefce7' : '#fff',
         zIndex: 1,
       }}
     >

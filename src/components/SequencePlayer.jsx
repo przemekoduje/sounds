@@ -33,6 +33,7 @@ const SequencePlayer = ({ sequence, onEnd }) => {
           key={index} 
           src={instrument.image} 
           alt={instrument.name} 
+          className='instruments-sequence'
           style={{
             display: index === currentIndex && isVisible ? 'block' : 'none',
             transition: 'opacity 0.5s', // Płynne znikanie i pojawianie się obrazka
